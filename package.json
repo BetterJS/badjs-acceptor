@@ -1,0 +1,29 @@
+{
+  "name": "badjs-accepter",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "connect": "^2.25.7",
+    "map-stream": "^0.1.0",
+    "zmq": "^2.8.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.8",
+    "gulp-jscs": "^1.1.2",
+    "gulp-mocha": "^1.0.0"
+  },
+  "scripts": {
+    "test": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/miniflycn/badjs-accepter.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/miniflycn/badjs-accepter/issues"
+  },
+  "homepage": "https://github.com/miniflycn/badjs-accepter"
+}

@@ -9,7 +9,6 @@ var map = require('map-stream')
 module.exports = function () {
   var stream = map(function (data, fn) {
     client.publish('badjs', JSON.stringify(data));
-    stream.end();
   });
   return stream;
 };
