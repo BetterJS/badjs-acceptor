@@ -11,7 +11,15 @@ stream.pipe(dispatcher());
 connect()
   .use('/badjs', connect.query())
   .use('/badjs', function (req, res) {
-
+    console.log('get a request')
+    if(req.query.id <=0){
+        res.writeHead(403, {
+            'Content-Type': 'text/html'
+        });
+        res.statusCode = 403;
+        res.write("id is required");
+        return ;
+    }
     // write data
     stream.write(req);
 

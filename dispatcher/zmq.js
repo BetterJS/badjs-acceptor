@@ -7,13 +7,14 @@ client.bind(port, function (err) {
   if (err) throw err;
 });
 
+
 /**
  * dispatcher
  * @returns {Stream}
  */
 module.exports = function () {
   var stream = map(function (data, fn) {
-    client.send('badjs' + ' ' + JSON.stringify(data));
+    client.send('badjs' + ' ' +  JSON.stringify(data));
   });
   return stream;
 };
