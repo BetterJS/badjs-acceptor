@@ -1,32 +1,31 @@
 'use strict';
 
 var connect = require('connect')
-    // make a EventStream
-  , stream = require('./lib/stream')()
-  , dispatcher = require('./dispatcher/zmq');
+    , firstSteam = null;
 
-// use zmq to dispatch
-stream.pipe(dispatcher());
+
+var filters = ['./filter/comboPreprocess'  , './filter/addExtStream' , './filter/excludeParam' , './dispatcher/zmq'];
 
 
 
-var has = function (obj , key){
-    return obj != null && hasOwnProperty.call(obj, key);
-}
-
-var extend = function(obj) {
-
-    var source, prop;
-    for (var i = 1, length = arguments.length; i < length; i++) {
-        source = arguments[i];
-        for (prop in source) {
-            if (hasOwnProperty.call(source, prop)) {
-                obj[prop] = source[prop];
-            }
-        }
+//var aa  = require('./filter/comboPreprocess')();
+//var bb =  require('./filter/addExtStream')();
+//var cc =  require('./filter/excludeParam')();
+//aa.pipe(bb);
+//bb.pipe)_
+//firstSteam = aa;
+filters.forEach(function (value ,key){
+    var curStream = require(value)();
+    if(!firstSteam){
+        firstSteam = curStream;
+    }else {
+        firstSteam.pipe( curStream);
     }
-    return obj;
-};
+});
+
+
+
+
 
 connect()
   .use('/badjs', connect.query())
@@ -43,28 +42,8 @@ connect()
 
 
     try{
-        if(!req.query.count){
-            stream.write(req);
-        }else {
-            var fixedParam = {id : req.query.id , from: req.query.from , uin : req.query.uin};
-            var queryArray = [];
-            delete req.query.id;
-            delete req.query.from;
-            delete req.query.uin;
-            delete req.query.count;
-            for(var key in req.query){
-                req.query[key].forEach(function (value , index ){
-                 if(!queryArray[index]){
-                     queryArray[index] = {};
-                 }
-                    queryArray[index][key] = value;
-                })
-            }
+        firstSteam.write({req : req , data : req.query});
 
-            queryArray.forEach(function (value , index){
-                stream.write(extend(value , fixedParam));
-            })
-        }
     }catch(e) {
         res.writeHead(403, {
             'Content-Type': 'text/html'
@@ -81,4 +60,4 @@ connect()
     });
     res.statusCode = 204;
     res.end();
-  }).listen(8000);
+  }).listen(80);

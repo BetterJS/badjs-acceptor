@@ -14,7 +14,7 @@ client.bind(port, function (err) {
  */
 module.exports = function () {
   var stream = map(function (data, fn) {
-    client.send('badjs' + ' ' +  JSON.stringify(data));
+    client.send('badjs' + ' ' +  JSON.stringify(data.data));
   });
   return stream;
 };
