@@ -1,19 +1,24 @@
 'use strict';
 
 var connect = require('connect')
-    , firstSteam = null;
+    , firstSteam = null
+    , log4js = require('log4js'),
+     logger = log4js.getLogger();
+
+var argv = process.argv.slice(2);
 
 
-var filters = ['./filter/comboPreprocess'  , './filter/addExtStream' , './filter/excludeParam' , './dispatcher/zmq'];
+if(argv.indexOf('--debug')){
+    logger.setLevel('DEBUG');
+}
 
 
 
-//var aa  = require('./filter/comboPreprocess')();
-//var bb =  require('./filter/addExtStream')();
-//var cc =  require('./filter/excludeParam')();
-//aa.pipe(bb);
-//bb.pipe)_
-//firstSteam = aa;
+
+var filters = ['./filter/comboPreprocess'  , './filter/addExtStream' , './filter/excludeParam'  , './filter/str2Int' , './dispatcher/zmq'];
+
+
+
 filters.forEach(function (value ,key){
     var curStream = require(value)();
     if(!firstSteam){
@@ -26,17 +31,17 @@ filters.forEach(function (value ,key){
 
 
 
-
 connect()
   .use('/badjs', connect.query())
   .use('/badjs', function (req, res) {
-    console.log('get a request')
+    logger.debug('===== get a message =====');
     if(req.query.id <=0){
         res.writeHead(403, {
             'Content-Type': 'text/html'
         });
         res.statusCode = 403;
         res.write("id is required");
+        logger.debug("id is required");
         return ;
     }
 
@@ -50,6 +55,8 @@ connect()
         });
         res.statusCode = 403;
         res.write("parse param  error :" + e);
+
+        logger.debug("parse param  error :" + e);
         return ;
     }
     // write data
@@ -59,5 +66,10 @@ connect()
       'Content-Type': 'image/jpeg'
     });
     res.statusCode = 204;
+
+    logger.debug("===== complete a message =====");
     res.end();
   }).listen(80);
+
+
+logger.info('start badjs-accepter , listen 80 ...');
