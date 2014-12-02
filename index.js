@@ -35,15 +35,21 @@ connect()
   .use('/badjs', connect.query())
   .use('/badjs', function (req, res) {
     logger.debug('===== get a message =====');
-    if(req.query.id <=0){
+
+    var id ;
+    if( isNaN(( id = req.query.id - 0) ) || id <=0 ||id >= 9999){
+
         res.writeHead(403, {
-            'Content-Type': 'text/html'
+            'Content-Type': 'image/jpeg'
         });
         res.statusCode = 403;
-        res.write("id is required");
-        logger.debug("id is required");
+        res.write("forbidden " );
+        logger.info("forbidden :" + req.query.id);
+        res.end();
         return ;
     }
+
+    req.query.id = id;
 
 
     try{
@@ -51,15 +57,15 @@ connect()
 
     }catch(e) {
         res.writeHead(403, {
-            'Content-Type': 'text/html'
+            'Content-Type': 'image/jpeg'
         });
         res.statusCode = 403;
-        res.write("parse param  error :" + e);
+        res.write("forbidden" );
 
-        logger.debug("parse param  error :" + e);
+        logger.info("parse param  error :" + e);
+        res.end();
         return ;
     }
-    // write data
 
     // response end with 204
     res.writeHead(204, {
