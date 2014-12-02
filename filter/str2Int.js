@@ -17,9 +17,9 @@ module.exports = function (nextStream) {
 
 
         function parse2Int (str){
-            var tmp = parseInt(json.level);
+            var tmp = parseInt(str);
             if(isNaN(tmp)){
-                return json.level;
+                return str;
             }else {
                 return tmp;
             }
