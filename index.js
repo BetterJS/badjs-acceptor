@@ -10,6 +10,8 @@ var argv = process.argv.slice(2);
 
 if(argv.indexOf('--debug')){
     logger.setLevel('DEBUG');
+}else {
+    logger.setLevel('INFO');
 }
 
 
