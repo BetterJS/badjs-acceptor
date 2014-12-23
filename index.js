@@ -8,7 +8,7 @@ var connect = require('connect')
 var argv = process.argv.slice(2);
 
 
-if(argv.indexOf('--debug')){
+if(argv.indexOf('--debug') >= 0){
     logger.setLevel('DEBUG');
 }else {
     logger.setLevel('INFO');
