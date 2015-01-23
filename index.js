@@ -30,7 +30,7 @@ filters.forEach(function (value ,key){
     }
 });
 
-
+global.projectsId = '';
 
 
 connect()
@@ -39,7 +39,7 @@ connect()
     logger.debug('===== get a message =====');
 
     var id ;
-    if( isNaN(( id = req.query.id - 0) ) || id <=0 ||id >= 9999){
+    if( isNaN(( id = req.query.id - 0) ) || id <=0 ||id >= 9999 || global.projectsId.indexOf(id)<0){
 
         res.writeHead(403, {
             'Content-Type': 'image/jpeg'
@@ -77,7 +77,18 @@ connect()
 
     logger.debug("===== complete a message =====");
     res.end();
-  }).listen(80);
-
+  })
+  .listen(80);
 
 logger.info('start badjs-accepter , listen 80 ...');
+
+
+setTimeout(function (){
+    require('./service/ProjectService')();
+},500)
+
+
+
+
+
+
