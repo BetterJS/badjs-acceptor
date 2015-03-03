@@ -10,8 +10,10 @@ var argv = process.argv.slice(2);
 
 if(argv.indexOf('--debug') >= 0){
     logger.setLevel('DEBUG');
+    GLOBAL.pjconfig =  require('./project.debug.json');
 }else {
     logger.setLevel('INFO');
+    GLOBAL.pjconfig =  require('./project.json');
 }
 
 
@@ -46,7 +48,7 @@ connect()
         });
         res.statusCode = 403;
         res.write("forbidden " );
-        logger.info("forbidden :" + req.query.id);
+        logger.debug("forbidden :" + req.query.id);
         res.end();
         return ;
     }
