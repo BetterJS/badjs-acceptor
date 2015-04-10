@@ -10,7 +10,7 @@ var argv = process.argv.slice(2);
 
 if(argv.indexOf('--debug') >= 0){
     logger.setLevel('DEBUG');
-    GLOBAL.pjconfig =  require('./project.debug.json');
+    argv.indexOf('--project') >= 0 && (GLOBAL.pjconfig =  require('./project.debug.json'));
 }else {
     logger.setLevel('INFO');
     GLOBAL.pjconfig =  require('./project.json');
