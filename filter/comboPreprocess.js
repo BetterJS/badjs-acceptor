@@ -1,5 +1,7 @@
 var map = require('map-stream');
 
+var _ = require("underscore");
+
 var has = function (obj , key){
     return obj != null && hasOwnProperty.call(obj, key);
 }
@@ -38,6 +40,9 @@ module.exports = function () {
           delete queryData.uin;
           delete queryData.count;
           for(var key in queryData){
+              if (!_.isArray(queryData[key])) {
+                  continue;
+              }
               queryData[key].forEach(function (value , index ){
                   if(!queryArray[index]){
                       queryArray[index] = {};

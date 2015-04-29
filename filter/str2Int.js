@@ -41,6 +41,7 @@ module.exports = function (nextStream) {
             json.rowNum = parse2Int(json.rowNum)
         }
 
+        json.date = new Date - 0;
 
         fn(null, data);
     });

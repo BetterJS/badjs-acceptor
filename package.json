@@ -5,9 +5,10 @@
   "main": "index.js",
   "dependencies": {
     "connect": "^2.25.7",
+    "log4js": "^0.6.2",
     "map-stream": "^0.1.0",
-    "zmq": "^2.8.0",
-    "log4js": "^0.6.2"
+    "underscore": "^1.8.3",
+    "zmq": "^2.8.0"
   },
   "devDependencies": {
     "gulp": "^3.8.8",
