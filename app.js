@@ -19,7 +19,6 @@ if(argv.indexOf('--debug') >= 0){
 if(argv.indexOf('--project') >= 0){
     GLOBAL.pjconfig =  require('./project.debug.json')
 }else {
-    logger.setLevel('INFO');
     GLOBAL.pjconfig =  require('./project.json');
 }
 
@@ -43,10 +42,6 @@ global.projectsId = '';
 connect()
   .use('/badjs', connect.query())
   .use('/badjs', function (req, res) {
-
-    if( global.debug){
-        logger.setLevel('DEBUG');
-    }
 
 
     logger.debug('===== get a message =====');
