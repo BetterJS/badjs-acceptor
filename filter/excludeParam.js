@@ -1,4 +1,3 @@
-var map = require('map-stream');
 
 /**
  *
@@ -6,15 +5,14 @@ var map = require('map-stream');
  * @returns {Stream}
  */
 module.exports = function (nextStream) {
-  var stream = map(function (data, fn) {
+  return {
+      process : function (data){
+          for(var key in data.data ){
+              if(/_.+/.test(key)){
+                  delete data.data[key];
+              }
+          }
 
-      for(var key in data.data ){
-            if(/_.+/.test(key)){
-                delete data.data[key];
-            }
       }
-
-      fn(null, data);
-  });
-  return stream;
+  }
 };

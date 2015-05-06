@@ -1,4 +1,3 @@
-var map = require('map-stream');
 
 /**
  * 添加服务器参数
@@ -19,10 +18,14 @@ module.exports = function (nextStream) {
         return "0.0.0.0";
     };
 
-    var stream = map(function (data, fn) {
-        data.data.ip = getClientIp(data.req);
-        data.data.userAgent = data.req.headers['user-agent'];
-        fn(null, data);
-    });
-    return stream;
+    return {
+        preProcess : function (data){
+
+        },
+
+        process : function (data){
+            data.data.ip = getClientIp(data.req);
+            data.data.userAgent = data.req.headers['user-agent'];
+        }
+    }
 };
