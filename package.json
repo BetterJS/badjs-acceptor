@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "c-interceptor": "~1.0.2",
     "connect": "^2.25.7",
     "log4js": "^0.6.2",
-    "map-stream": "^0.1.0",
     "underscore": "^1.8.3",
     "zmq": "^2.8.0"
   },

@@ -1,9 +1,10 @@
 'use strict';
 
 var connect = require('connect')
-    , firstSteam = null
     , log4js = require('log4js'),
      logger = log4js.getLogger();
+
+var interceptor = require("c-interceptor")();
 
 var argv = process.argv.slice(2);
 
@@ -23,17 +24,13 @@ if(argv.indexOf('--project') >= 0){
 }
 
 
-var filters = ['./filter/comboPreprocess'  , './filter/addExtStream' , './filter/excludeParam'  , './filter/str2Int' , './dispatcher/zmq'];
+var interceptors = ['./filter/comboPreprocess'  , './filter/addExtStream' , './filter/excludeParam'  , './filter/str2Int' , './dispatcher/zmq'];
 
 
 
-filters.forEach(function (value ,key){
-    var curStream = require(value)();
-    if(!firstSteam){
-        firstSteam = curStream;
-    }else {
-        firstSteam.pipe( curStream);
-    }
+interceptors.forEach(function (value ,key){
+    var one = require(value)();
+    interceptor.add(one);
 });
 
 global.projectsId = '';
@@ -63,7 +60,7 @@ connect()
 
 
     try{
-        firstSteam.write({req : req , data : req.query});
+        interceptor.invoke({req : req , data : req.query});
 
     }catch(e) {
         res.writeHead(403, {

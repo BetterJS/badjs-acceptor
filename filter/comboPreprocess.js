@@ -1,4 +1,3 @@
-var map = require('map-stream');
 
 var _ = require("underscore");
 
@@ -26,38 +25,34 @@ var extend = function(obj) {
  * @returns {Stream}
  */
 module.exports = function () {
-  var stream = map(function (data, fn) {
+  return {
+      process : function (data){
+          var queryData = data.data;
 
-      var queryData = data.data;
-
-      if(!queryData.count){
-          fn(null, data);
-      }else {
-          var fixedParam = {id : queryData.id , from: queryData.from , uin : queryData.uin};
-          var queryArray = [];
-          delete queryData.id;
-          delete queryData.from;
-          delete queryData.uin;
-          delete queryData.count;
-          for(var key in queryData){
-              if (!_.isArray(queryData[key])) {
-                  continue;
-              }
-              queryData[key].forEach(function (value , index ){
-                  if(!queryArray[index]){
-                      queryArray[index] = {};
+          if(!queryData.count){
+          }else {
+              var fixedParam = {id : queryData.id , from: queryData.from , uin : queryData.uin};
+              var queryArray = [];
+              delete queryData.id;
+              delete queryData.from;
+              delete queryData.uin;
+              delete queryData.count;
+              for(var key in queryData){
+                  if (!_.isArray(queryData[key])) {
+                      continue;
                   }
-                  queryArray[index][key] = value;
+                  queryData[key].forEach(function (value , index ){
+                      if(!queryArray[index]){
+                          queryArray[index] = {};
+                      }
+                      queryArray[index][key] = value;
+                  })
+              }
+
+              queryArray.forEach(function (value , index){
+                  data.data =   extend(value , fixedParam);
               })
           }
-
-          queryArray.forEach(function (value , index){
-              data.data =   extend(value , fixedParam);
-              fn(null, data);
-//              stream.write(extend(value , fixedParam));
-          })
       }
-
-  });
-  return stream;
+  }
 };
