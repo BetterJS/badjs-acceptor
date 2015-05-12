@@ -6,15 +6,13 @@ var map = require('map-stream');
  * @returns {Stream}
  */
 module.exports = function (nextStream) {
-  var stream = map(function (data, fn) {
+      var stream = map(function (data, fn) {
 
-      for(var key in data.data ){
-            if(/_.+/.test(key)){
-                delete data.data[key];
+            for (var key in data.data) {
+                  /^_/.test(key) && delete data.data[key];
             }
-      }
 
-      fn(null, data);
-  });
-  return stream;
+            fn(null, data);
+      });
+      return stream;
 };
