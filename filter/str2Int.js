@@ -11,7 +11,6 @@
 module.exports = function (nextStream) {
     return {
         process : function (data){
-            var json = data.data;
 
 
             function parse2Int (str){
@@ -23,23 +22,26 @@ module.exports = function (nextStream) {
                 }
             }
 
-            if(json.level){
-                json.level = parse2Int(json.level)
-            }
+            data.data.forEach(function (value){
 
-            if(json.uin){
-                json.uin = parse2Int(json.uin)
-            }
+                if(value.level){
+                    value.level = parse2Int(value.level)
+                }
 
-            if(json.colNum){
-                json.colNum = parse2Int(json.colNum)
-            }
+                if(value.uin){
+                    value.uin = parse2Int(value.uin)
+                }
 
-            if(json.rowNum){
-                json.rowNum = parse2Int(json.rowNum)
-            }
+                if(value.colNum){
+                    value.colNum = parse2Int(value.colNum)
+                }
 
-            json.date = new Date - 0;
+                if(value.rowNum){
+                    value.rowNum = parse2Int(value.rowNum)
+                }
+
+                value.date = new Date - 0;
+            })
 
         }
     }

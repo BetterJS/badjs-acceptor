@@ -7,11 +7,14 @@
 module.exports = function (nextStream) {
     return {
         process : function (data){
-            for(var key in data.data ){
-                if(/^_.+/.test(key)){
-                    delete data.data[key];
+            data.data.forEach(function (value){
+                for(var key in value ){
+                    if(/^_.+/.test(key)){
+                        delete value[key];
+                    }
                 }
-            }
+            })
+
 
         }
     }

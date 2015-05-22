@@ -24,8 +24,11 @@ module.exports = function (nextStream) {
         },
 
         process : function (data){
-            data.data.ip = getClientIp(data.req);
-            data.data.userAgent = data.req.headers['user-agent'];
+            data.data.forEach(function(value){
+                value.ip = getClientIp(data.req);
+                value.userAgent = data.req.headers['user-agent'];
+            })
+
         }
     }
 };

@@ -19,9 +19,13 @@ module.exports = function () {
 
   return {
       process : function (data){
-          client.send(service + ' ' +  JSON.stringify(data.data));
+          data.data.forEach(function (value){
+              var str = JSON.stringify(value)
+              client.send(service + ' ' + str );
 
-          logger.debug('dispatcher a message : ' + 'badjs' + ' ' +  JSON.stringify(data.data))
+              logger.debug('dispatcher a message : ' + 'badjs' + ' ' +  str)
+          })
+
       }
   }
 };

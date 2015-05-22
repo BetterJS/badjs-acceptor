@@ -28,8 +28,10 @@ module.exports = function () {
   return {
       process : function (data){
           var queryData = data.data;
+          data.data = [];
 
           if(!queryData.count){
+              data.data.push( queryData)
           }else {
               var fixedParam = {id : queryData.id , from: queryData.from , uin : queryData.uin};
               var queryArray = [];
@@ -50,7 +52,7 @@ module.exports = function () {
               }
 
               queryArray.forEach(function (value , index){
-                  data.data =   extend(value , fixedParam);
+                  data.data.push(extend(value , fixedParam));
               })
           }
       }
