@@ -83,7 +83,7 @@ connect()
     logger.debug("===== complete a message =====");
     res.end();
   })
-  .listen(80);
+  .listen(8080);
 
 logger.info('start badjs-accepter , listen 80 ...');
 
