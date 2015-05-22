@@ -83,7 +83,7 @@ connect()
     logger.debug("===== complete a message =====");
     res.end();
   })
-  .listen(8080);
+  .listen(GLOBAL.pjconfig.port);
 
 logger.info('start badjs-accepter , listen 80 ...');
 

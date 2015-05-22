@@ -1,4 +1,5 @@
 {
+  "port" : 80,
     "zmq": {
         "url": "tcp://10.143.132.205:10000",
         "subscribe": "badjs"
