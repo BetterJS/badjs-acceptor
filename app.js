@@ -85,7 +85,7 @@ connect()
   })
   .listen(GLOBAL.pjconfig.port);
 
-logger.info('start badjs-accepter , listen 80 ...');
+logger.info('start badjs-accepter , listen '+GLOBAL.pjconfig.port+' ...');
 
 
 setTimeout(function (){
