@@ -13,20 +13,31 @@ var log4js = require('log4js'),
 
 var client = [];
 
+var close = function (){
+    var index = 0;
+    for(var i = 0 ; i < client.length ; i++){
+        if (client[i]._id == this._id){
+            index = i;
+            break;
+        }
+    }
+    client.splice(index , 1);
+    logger.info('one client closed ');
+}
+
 net.createServer(function (c){
     logger.info('one client connected ');
 
+
     c.on('end', function() {
-        var index = 0;
-        for(var i = 0 ; i < client.length ; i++){
-            if (client[i]._id == this._id){
-                index = i;
-                break;
-            }
-        }
-        client.splice(index , 1);
-        logger.info('one client closed ');
+        close.apply(this);
     });
+
+    c.on("error" , function (e){
+        close.apply(this);
+    });
+
+
 
     c._id= new Date - 0;
     client.push(c);
