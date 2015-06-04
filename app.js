@@ -24,7 +24,7 @@ if(argv.indexOf('--project') >= 0){
 }
 
 
-var interceptors = ['./filter/comboPreprocess'  , './filter/addExtStream' , './filter/excludeParam'  , './filter/str2Int' , './dispatcher/zmq'];
+var interceptors = ['./filter/comboPreprocess'  , './filter/addExtStream' , './filter/excludeParam'  , './filter/str2Int' , './dispatcher/nodeNet'];
 
 
 

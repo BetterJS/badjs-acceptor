@@ -1,7 +1,9 @@
 {
     "port" : 80,
-    "zmq": {
-        "url": "tcp://127.0.0.1:10000",
+    "dispatcher": {
+        "port" : 10000,
+        "address" : "127.0.0.1",
         "subscribe": "badjs"
     }
+
 }

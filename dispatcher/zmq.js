@@ -1,12 +1,13 @@
 var zmq = require('zmq')
   , client = zmq.socket('pub')
-  , port =  GLOBAL.pjconfig.zmq.url
-  , service =  GLOBAL.pjconfig.zmq.subscribe;
+  , port =  GLOBAL.pjconfig.dispatcher.port
+  , address =  GLOBAL.pjconfig.dispatcher.address
+  , service =  GLOBAL.pjconfig.dispatcher.subscribe;
 
 var log4js = require('log4js'),
     logger = log4js.getLogger();
 
-client.bind(port, function (err) {
+client.bind("tcp://" + address + ":" + port, function (err) {
   if (err) throw err;
 });
 
