@@ -11,17 +11,20 @@ var log4js = require('log4js'),
     logger = log4js.getLogger();
 
 
-var client = [];
+var clients = [];
 
 var close = function (){
     var index = 0;
-    for(var i = 0 ; i < client.length ; i++){
-        if (client[i]._id == this._id){
+    for(var i = 0 ; i < clients.length ; i++){
+        if (clients[i]._id == this._id){
             index = i;
             break;
         }
     }
-    client.splice(index , 1);
+    var closedClient = clients.splice(index , 1);
+    if(closedClient && closedClient.length >= 0 ){
+        closedClient[0].end();
+    }
     logger.info('one client closed ');
 }
 
@@ -31,6 +34,7 @@ net.createServer(function (c){
 
     c.on('end', function() {
         close.apply(this);
+
     });
 
     c.on("error" , function (e){
@@ -40,7 +44,7 @@ net.createServer(function (c){
 
 
     c._id= new Date - 0;
-    client.push(c);
+    clients.push(c);
 
 }).listen(port , address);
 
@@ -56,8 +60,9 @@ module.exports = function () {
             data.data.forEach(function (value){
                 var str = JSON.stringify(value);
 
-                client.forEach(function (value , key ){
-                    value.write(service + ' ' + str );
+                clients.forEach(function (value , key ){
+                    //value.write(, "UTF-8" );
+                    value.end(service + ' ' + str );
                 })
 
                 logger.debug('dispatcher a message : ' + 'badjs' + ' ' +  str)
