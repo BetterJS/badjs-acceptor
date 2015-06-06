@@ -1,0 +1,2 @@
+call ab.exe -n 2 -c 2 "127.0.0.1/badjs?id=1&uin=345446383&from=http%3A%2F%2Fmobileapp.ke.qq.com%2Fmobileapp%2FcourseDetail.html%3F_bid%3D283%23course_id%3D24216&msg[0]=22&level[0]=4&count=1&_t=1429091939853"
+pause;

@@ -1,7 +1,10 @@
 {
-  "port" : 80,
-    "zmq": {
-        "url": "tcp://10.143.132.205:10000",
-        "subscribe": "badjs"
-    }
+    "port": 80,
+    "dispatcher": {
+        "port": 10000,
+        "address": "10.143.132.205",
+        "subscribe": "badjs",
+        "module": "./dispatcher/nodeNet"
+    },
+    "interceptors": ["./filter/comboPreprocess"  , "./filter/addExtStream" , "./filter/excludeParam"  , "./filter/str2Int" ]
 }

@@ -3,7 +3,8 @@
     "dispatcher": {
         "port" : 10000,
         "address" : "127.0.0.1",
-        "subscribe": "badjs"
-    }
-
+        "subscribe": "badjs",
+        "module" : "./dispatcher/nodeNet"
+    },
+    "interceptors" : ["./filter/comboPreprocess"  , "./filter/addExtStream" , "./filter/excludeParam"  , "./filter/str2Int" ]
 }

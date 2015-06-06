@@ -48,6 +48,7 @@ net.createServer(function (c){
 
 }).listen(port , address);
 
+logger.info('dispatcher of  server starting... , listen ' + port);
 
 /**
  * dispatcher
@@ -55,14 +56,16 @@ net.createServer(function (c){
  */
 module.exports = function () {
 
+
+
     return {
         process : function (data){
             data.data.forEach(function (value){
                 var str = JSON.stringify(value);
 
                 clients.forEach(function (value , key ){
-                    //value.write(, "UTF-8" );
-                    value.end(service + ' ' + str );
+                    value.write(service + ' ' + str) ;
+                    process.stdout.flush();
                 })
 
                 logger.debug('dispatcher a message : ' + 'badjs' + ' ' +  str)

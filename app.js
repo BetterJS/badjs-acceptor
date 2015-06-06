@@ -24,9 +24,9 @@ if(argv.indexOf('--project') >= 0){
 }
 
 
-var interceptors = ['./filter/comboPreprocess'  , './filter/addExtStream' , './filter/excludeParam'  , './filter/str2Int' , './dispatcher/nodeNet'];
+var interceptors = GLOBAL.pjconfig.interceptors;
 
-
+interceptors.push(GLOBAL.pjconfig.dispatcher.module);
 
 interceptors.forEach(function (value ,key){
     var one = require(value)();
@@ -90,7 +90,7 @@ logger.info('start badjs-accepter , listen '+GLOBAL.pjconfig.port+' ...');
 
 setTimeout(function (){
     require('./service/ProjectService')();
-},500)
+},500);
 
 
 
