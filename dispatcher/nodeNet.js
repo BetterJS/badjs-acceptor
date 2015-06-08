@@ -64,9 +64,8 @@ module.exports = function () {
                 var str = JSON.stringify(value);
 
                 clients.forEach(function (value , key ){
-                    value.write(service + ' ' + str) ;
-                    process.stdout.flush();
-                })
+                    value.write(service + ' ' + str  + String.fromCharCode(0x03) ) ;
+                });
 
                 logger.debug('dispatcher a message : ' + 'badjs' + ' ' +  str)
             })

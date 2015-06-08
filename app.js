@@ -63,6 +63,7 @@ connect()
         interceptor.invoke({req : req , data : req.query});
 
     }catch(e) {
+        throw e;
         res.writeHead(403, {
             'Content-Type': 'image/jpeg'
         });
