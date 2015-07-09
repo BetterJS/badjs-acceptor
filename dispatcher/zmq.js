@@ -24,7 +24,7 @@ module.exports = function () {
               var str = JSON.stringify(value)
               client.send(service + value.id + ' ' + str );
 
-              logger.debug('dispatcher a message : ' + 'badjs' + ' ' +  str)
+              logger.debug('dispatcher a message : ' + 'badjs' + ' ' +  str);
           })
 
       }
