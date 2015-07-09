@@ -4,7 +4,7 @@
         "port": 10000,
         "address": "10.143.132.205",
         "subscribe": "badjs",
-        "module": "./dispatcher/nodeNet"
+        "module": "./dispatcher/zmq"
     },
     "interceptors": ["./filter/comboPreprocess"  , "./filter/addExtStream" , "./filter/excludeParam"  , "./filter/str2Int" ]
 }
