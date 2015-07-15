@@ -33,7 +33,7 @@ module.exports = function () {
           if(!queryData.count){
               data.data.push( queryData)
           }else {
-              var fixedParam = {id : queryData.id , from: queryData.from , uin : queryData.uin};
+              var fixedParam = {id : queryData.id , from: queryData.from , uin : queryData.uin , ext : queryData.ext || "{}"};
               var queryArray = [];
               delete queryData.id;
               delete queryData.from;
