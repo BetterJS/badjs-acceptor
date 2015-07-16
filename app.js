@@ -4,6 +4,8 @@ var connect = require('connect')
     , log4js = require('log4js'),
      logger = log4js.getLogger();
 
+
+
 var interceptor = require("c-interceptor")();
 
 var argv = process.argv.slice(2);
@@ -35,6 +37,8 @@ interceptors.forEach(function (value ,key){
 
 global.projectsId = '';
 
+var forbiddenData = "forbidden";
+
 
 connect()
   .use('/badjs', connect.query())
@@ -46,11 +50,14 @@ connect()
     var id ;
     if( isNaN(( id = req.query.id - 0) ) || id <=0 ||id >= 9999 || global.projectsId.indexOf(id)<0){
 
+
         res.writeHead(403, {
-            'Content-Type': 'image/jpeg'
+            'Content-Type': 'image/jpeg',
+            'Content-length': forbiddenData.length,
+            "Connection": "close"
         });
         res.statusCode = 403;
-        res.write("forbidden " );
+        res.write(forbiddenData );
         logger.debug("forbidden :" + req.query.id);
         res.end();
         return ;
@@ -63,12 +70,13 @@ connect()
         interceptor.invoke({req : req , data : req.query});
 
     }catch(e) {
-        throw e;
         res.writeHead(403, {
-            'Content-Type': 'image/jpeg'
+            'Content-Type': 'image/jpeg',
+            'Content-length': forbiddenData.length,
+            "Connection": "close"
         });
         res.statusCode = 403;
-        res.write("forbidden" );
+        res.write(forbiddenData );
 
         logger.info("parse param  error :" + e);
         res.end();
@@ -77,14 +85,17 @@ connect()
 
     // response end with 204
     res.writeHead(204, {
-      'Content-Type': 'image/jpeg'
+        'Content-Type': 'image/jpeg',
+        "Content-length": 0,
+        "Connection": "close"
     });
     res.statusCode = 204;
 
     logger.debug("===== complete a message =====");
     res.end();
   })
-  .listen(GLOBAL.pjconfig.port);
+    .setMaxListeners(0)
+  .listen({port: GLOBAL.pjconfig.port , backlog :1024000});
 
 logger.info('start badjs-accepter , listen '+GLOBAL.pjconfig.port+' ...');
 
