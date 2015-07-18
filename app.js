@@ -94,8 +94,8 @@ connect()
     logger.debug("===== complete a message =====");
     res.end();
   })
-    .setMaxListeners(0)
-  .listen({port: GLOBAL.pjconfig.port , backlog :1024000});
+  .listen(  GLOBAL.pjconfig.port );
+  //.listen({port: GLOBAL.pjconfig.port , backlog :1024000});
 
 logger.info('start badjs-accepter , listen '+GLOBAL.pjconfig.port+' ...');
 
