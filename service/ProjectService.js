@@ -28,8 +28,8 @@ var ProjectService = function (clusters){
 
                 dispatchCluster({projectsId :  param.projectsId});
 
-                fs.writeFile("./project.db",global.projectsId , function (){
-                    logger.info('update project.db :' + global.projectsId);
+                fs.writeFile("./project.db",param.projectsId , function (){
+                    logger.info('update project.db :' + param.projectsId);
                 });
             }
 
