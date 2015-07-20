@@ -8,7 +8,14 @@ var connect = require('connect'),
     logger = log4js.getLogger();
 
 
-var ProjectService = function (){
+var ProjectService = function (clusters){
+
+    var dispatchCluster = function (data){
+        for(var i = 0 ; i < clusters.length ; i++){
+            clusters[i].send(data);
+        }
+    }
+
     connect()
         .use('/getProjects', connect.query())
         .use('/getProjects' , function (req ,res){
@@ -17,16 +24,14 @@ var ProjectService = function (){
             if(param.auth != "badjsAccepter" || !param.projectsId ){
 
             }else {
-                global.projectsId = param.projectsId;
+                //global.projectsId = param.projectsId;
+
+                dispatchCluster({projectsId :  param.projectsId});
 
                 fs.writeFile("./project.db",global.projectsId , function (){
                     logger.info('update project.db :' + global.projectsId);
                 });
             }
-
-
-
-
 
             res.writeHead(200 );
             res.end();
@@ -36,16 +41,16 @@ var ProjectService = function (){
 
     var data = fs.readFileSync("./project.db","utf-8");
 
-    global.projectsId = data;
 
-    logger.info('load project.db :' + global.projectsId);
+    dispatchCluster({projectsId :  data });
+
+
+    //global.projectsId = data;
+
+    logger.info('load project.db :' + data);
 
 
 }
-
-
-
-
 
 
 module.exports = ProjectService;

@@ -4,10 +4,7 @@ var connect = require('connect')
     , log4js = require('log4js'),
      logger = log4js.getLogger();
 
-
-
-var interceptor = require("c-interceptor")();
-
+var cluster = require("cluster");
 var argv = process.argv.slice(2);
 
 
@@ -26,18 +23,54 @@ if(argv.indexOf('--project') >= 0){
 }
 
 
+
+if (cluster.isMaster) {
+
+    var zmq = require(GLOBAL.pjconfig.dispatcher.module)();
+
+    var clusters = [];
+    // Fork workers.
+    for (var i = 0; i < 4; i++) {
+        var forkCluster = cluster.fork();
+        clusters.push(forkCluster);
+        forkCluster.on("message" , function (data){
+            var json = data;
+            if(json.msg){
+                zmq.process({data : json.msg});
+            }
+
+        })
+    }
+
+    setTimeout(function (){
+        require('./service/ProjectService')(clusters);
+    },1000)
+
+
+    return ;
+}
+
+
+var interceptor = require("c-interceptor")();
 var interceptors = GLOBAL.pjconfig.interceptors;
 
-interceptors.push(GLOBAL.pjconfig.dispatcher.module);
 
 interceptors.forEach(function (value ,key){
     var one = require(value)();
     interceptor.add(one);
 });
 
-global.projectsId = '';
 
 var forbiddenData = "forbidden";
+
+global.projectsId = '';
+process.on("message" , function (data){
+    var json = data;
+    if(json.projectsId){
+        global.projectsId = json.projectsId;
+    }
+
+})
 
 
 connect()
@@ -86,8 +119,7 @@ connect()
     // response end with 204
     res.writeHead(204, {
         'Content-Type': 'image/jpeg',
-        "Content-length": 0,
-        "Connection": "close"
+        "Content-length": 0
     });
     res.statusCode = 204;
 
@@ -98,12 +130,6 @@ connect()
   //.listen({port: GLOBAL.pjconfig.port , backlog :1024000});
 
 logger.info('start badjs-accepter , listen '+GLOBAL.pjconfig.port+' ...');
-
-
-setTimeout(function (){
-    require('./service/ProjectService')();
-},500);
-
 
 
 
