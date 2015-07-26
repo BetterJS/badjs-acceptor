@@ -1,3 +1,3 @@
 #badjs-accpeter
 
-> Accpeter for badjs, filter log and dispatch to message-queue
+> Accept log by client report, filter log and dispatch to message-queue
