@@ -26,7 +26,6 @@ if(argv.indexOf('--project') >= 0){
 
 if (cluster.isMaster) {
 
-    var zmq = require(GLOBAL.pjconfig.dispatcher.module)();
 
     var clusters = [];
     // Fork workers.
@@ -52,7 +51,7 @@ interceptors.forEach(function (value ,key){
     var one = require(value)();
     interceptor.add(one);
 });
-
+interceptor.add(require(GLOBAL.pjconfig.dispatcher.module)());
 
 var forbiddenData = "forbidden";
 

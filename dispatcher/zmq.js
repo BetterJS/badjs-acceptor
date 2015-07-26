@@ -1,8 +1,7 @@
 var zmq = require('zmq')
   , client = zmq.socket('push')
   , port =  GLOBAL.pjconfig.dispatcher.port
-  , address =  GLOBAL.pjconfig.dispatcher.address
-  , service =  GLOBAL.pjconfig.dispatcher.subscribe;
+  , address =  GLOBAL.pjconfig.dispatcher.address;
 
 var log4js = require('log4js'),
     logger = log4js.getLogger();

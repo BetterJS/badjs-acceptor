@@ -1,10 +1,10 @@
 {
     "port" : 80,
     "dispatcher": {
-        "port" : 10000,
-        "address" : "127.0.0.1",
+        "port": 10001,
+        "address": "127.0.0.1",
         "subscribe": "badjs",
         "module" : "./dispatcher/zmq"
     },
-    "interceptors" : ["./filter/comboPreprocess"  , "./filter/addExtStream" , "./filter/excludeParam"  , "./filter/str2Int" , "./filter/clusterProcess" ]
+    "interceptors" : ["./filter/comboPreprocess"  , "./filter/addExtStream" , "./filter/excludeParam"  , "./filter/str2Int"  ]
 }
