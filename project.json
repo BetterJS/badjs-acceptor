@@ -6,5 +6,5 @@
         "subscribe": "badjs",
         "module": "./dispatcher/zmq"
     },
-    "interceptors": ["./filter/comboPreprocess"  , "./filter/addExtStream" , "./filter/excludeParam"  , "./filter/str2Int" , "./filter/clusterProcess" ]
+    "interceptors": ["./filter/comboPreprocess"  , "./filter/addExtStream" , "./filter/excludeParam"  , "./filter/str2Int" , "./filter/zmq" ]
 }

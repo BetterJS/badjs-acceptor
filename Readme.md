@@ -1,3 +1,3 @@
 #badjs-accpeter
 
-> A Font-end Log System.
+> Accpeter for badjs, filter log and dispatch to message-queue

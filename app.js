@@ -33,13 +33,6 @@ if (cluster.isMaster) {
     for (var i = 0; i < 4; i++) {
         var forkCluster = cluster.fork();
         clusters.push(forkCluster);
-        forkCluster.on("message" , function (data){
-            var json = data;
-            if(json.msg){
-                zmq.process({data : json.msg});
-            }
-
-        })
     }
 
     setTimeout(function (){
