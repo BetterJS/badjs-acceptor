@@ -21,7 +21,7 @@ module.exports = function () {
       process : function (data){
           data.data.forEach(function (value){
               var str = JSON.stringify(value)
-              client.send(service + value.id + ' ' + str );
+              client.send(service + value.id + '| ' + str );
               logger.debug('dispatcher a message : ' + 'badjs' + ' ' +  str);
           })
 
