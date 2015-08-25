@@ -42,7 +42,7 @@ interceptors.forEach(function(value, key) {
     var one = require(value)();
     interceptor.add(one);
 });
-/*interceptor.add(require(GLOBAL.pjconfig.dispatcher.module)());*/
+interceptor.add(require(GLOBAL.pjconfig.dispatcher.module)());
 
 var forbiddenData = '403 forbidden';
 
