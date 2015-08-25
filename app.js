@@ -71,7 +71,7 @@ connect()
         if (isNaN(id) ||
             id <= 0 ||
             id >= 9999 ||
-            global.projectsId.split('_').indexOf(id) < 0) {
+            global.projectsId.split('_').indexOf(id+"") < 0) {
 
             responseHeader['Content-length'] = forbiddenData.length;
             res.writeHead(403, responseHeader);
