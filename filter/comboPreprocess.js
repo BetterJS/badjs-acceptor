@@ -35,6 +35,9 @@ module.exports = function () {
           }else {
               var fixedParam = {id : queryData.id , from: queryData.from , uin : queryData.uin , ext : queryData.ext || "{}"};
               var queryArray = [];
+              if(_.isArray( fixedParam.ext)){
+                  delete fixedParam.ext;
+              }
               delete queryData.id;
               delete queryData.from;
               delete queryData.uin;
