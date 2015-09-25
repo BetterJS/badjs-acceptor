@@ -2,6 +2,13 @@
 
 > Accept log by client report, filter log and dispatch to message-queue
 
+
+# 启动参数
+--debug  log 采用debug 级别 , 默认使用info 
+
+--project 使用测试环境（ project.debug.json ）配置 ， 默认使用 project.json
+
+# 配置说明
 ```
 {
     "port" : 80,  // 启动端口
@@ -20,3 +27,5 @@
             ]
 }
 ```
+
+
