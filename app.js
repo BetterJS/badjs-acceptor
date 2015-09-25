@@ -30,7 +30,7 @@ if (cluster.isMaster) {
 
     setTimeout(function() {
         require('./service/ProjectService')(clusters);
-    }, 1000);
+    }, 3000);
 
     return;
 }
@@ -51,7 +51,13 @@ global.projectsId = '';
 process.on('message', function(data) {
     var json = data;
     if (json.projectsId) {
-        global.projectsId = json.projectsId;
+        var map = {};
+        (json.projectsId.split(/[\|_]/ || [])).forEach(function (value){
+            if(value){
+                map[value +""] = true;
+            }
+        })
+        global.projectsId = map;
     }
 });
 
@@ -71,7 +77,7 @@ connect()
         if (isNaN(id) ||
             id <= 0 ||
             id >= 9999 ||
-            global.projectsId.split('_').indexOf(id+"") < 0) {
+            projectsId[id+""] ) {
 
             responseHeader['Content-length'] = forbiddenData.length;
             res.writeHead(403, responseHeader);

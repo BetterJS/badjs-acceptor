@@ -18,6 +18,7 @@ var ProjectService = function (clusters){
 
     connect()
         .use('/getProjects', connect.query())
+        .use('/getProjects', connect.bodyParser())
         .use('/getProjects' , function (req ,res){
             var param = req.query;
 
