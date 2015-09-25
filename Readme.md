@@ -1,6 +1,7 @@
 #badjs-accpeter
 
 > Accept log by client report, filter log and dispatch to message-queue
+
 ```
 {
     "port" : 80,  // 启动端口
