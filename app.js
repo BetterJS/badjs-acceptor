@@ -77,7 +77,7 @@ connect()
         if (isNaN(id) ||
             id <= 0 ||
             id >= 9999 ||
-            projectsId[id+""] ) {
+            !projectsId[id+""] ) {
 
             responseHeader['Content-length'] = forbiddenData.length;
             res.writeHead(403, responseHeader);
