@@ -21,6 +21,9 @@ var ProjectService = function (clusters){
         .use('/getProjects', connect.bodyParser())
         .use('/getProjects' , function (req ,res){
             var param = req.query;
+            if (req.method == "POST") {
+                param = req.body;
+            }
 
             if(param.auth != "badjsAccepter" || !param.projectsId ){
 
