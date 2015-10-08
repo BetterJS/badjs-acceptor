@@ -6,6 +6,8 @@ var connect = require('connect'),
 var cluster = require('cluster');
 var argv = process.argv.slice(2);
 
+var REG_REFERER = /^https?:\/\/[^\/]+\//i;
+
 if (argv.indexOf('--debug') >= 0) {
     logger.setLevel('DEBUG');
     global.debug = true;
@@ -47,19 +49,44 @@ interceptor.add(require(GLOBAL.pjconfig.dispatcher.module)());
 var forbiddenData = '403 forbidden';
 
 global.projectsId = '';
+global.projectsInfo = {};
 
 process.on('message', function(data) {
     var json = data;
     if (json.projectsId) {
         var map = {};
-        (json.projectsId.split(/[\|_]/ || [])).forEach(function (value){
-            if(value){
-                map[value +""] = true;
+        var pids = [];
+        json.projectsId.split("_").forEach(function(value) {
+            var pid_appkey = value.split("|");
+            var pid = pid_appkey[0] + "";
+            var appkey = pid_appkey[1] + "";
+            if (pid && appkey) {
+                pids.push(pid);
+                map[pid] = appkey;
             }
-        })
+        });
         global.projectsId = map;
     }
+    if (json.projectsInfo) {
+        try {
+            var info = JSON.parse(json.projectsInfo);
+            if (typeof info === "object") {
+                for (var k in info) {
+                    var v = info[k] || {};
+                    v.referer = (v.url.toString().match(REG_REFERER) || [])[0];
+                }
+                global.projectsInfo = info;
+                console.log(info)
+            }
+        } catch (error) {}
+    }
 });
+
+var referer_match = function(id, req) {
+    var referer = ((req || {}).headers || {}).referer.toString().match(REG_REFERER) || "";
+    return typeof global.projectsInfo === "object" &&
+        referer[0] === (global.projectsInfo[id.toString()] || {}).referer;
+};
 
 connect()
     .use('/badjs', connect.query())
@@ -77,7 +104,8 @@ connect()
         if (isNaN(id) ||
             id <= 0 ||
             id >= 9999 ||
-            !projectsId[id+""] ) {
+            !global.projectsId[id + ""] ||
+            !referer_match(id, req)) {
 
             responseHeader['Content-length'] = forbiddenData.length;
             res.writeHead(403, responseHeader);
