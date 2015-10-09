@@ -7,6 +7,7 @@ var cluster = require('cluster');
 var argv = process.argv.slice(2);
 
 var REG_REFERER = /^https?:\/\/[^\/]+\//i;
+var REG_DOMAIN = /^(?:https?:)?(?:\/\/)?([^\/]+\.[^\/]+)\/?/i;
 
 if (argv.indexOf('--debug') >= 0) {
     logger.setLevel('DEBUG');
@@ -51,6 +52,10 @@ var forbiddenData = '403 forbidden';
 global.projectsId = '';
 global.projectsInfo = {};
 
+var get_domain = function(url){
+    return (url.toString().match(REG_DOMAIN) || ['', ''])[1];
+};
+
 process.on('message', function(data) {
     var json = data;
     if (json.projectsId) {
@@ -73,7 +78,7 @@ process.on('message', function(data) {
             if (typeof info === "object") {
                 for (var k in info) {
                     var v = info[k] || {};
-                    v.referer = (v.url.toString().match(REG_REFERER) || [])[0];
+                    v.domain = get_domain(v.url);
                 }
                 global.projectsInfo = info;
             }
@@ -84,7 +89,7 @@ process.on('message', function(data) {
 var referer_match = function(id, req) {
     var referer = ((req || {}).headers || {}).referer.toString().match(REG_REFERER) || "";
     return typeof global.projectsInfo === "object" &&
-        referer[0] === (global.projectsInfo[id.toString()] || {}).referer;
+        referer[0].indexOf((global.projectsInfo[id.toString()] || {}).domain) !== -1;
 };
 
 connect()
