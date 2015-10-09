@@ -76,7 +76,6 @@ process.on('message', function(data) {
                     v.referer = (v.url.toString().match(REG_REFERER) || [])[0];
                 }
                 global.projectsInfo = info;
-                console.log(info)
             }
         } catch (error) {}
     }
