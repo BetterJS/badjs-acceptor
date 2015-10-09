@@ -87,9 +87,10 @@ process.on('message', function(data) {
 });
 
 var referer_match = function(id, req) {
-    var referer = (((req || {}).headers || {}).referer || "").toString().match(REG_REFERER) || "";
+    var referer = (((req || {}).headers || {}).referer || "").toString();
+    var domain = (referer.match(REG_REFERER) || [""])[0] || "";
     return typeof global.projectsInfo === "object" &&
-        (referer[0] || "").indexOf((global.projectsInfo[id.toString()] || {}).domain) !== -1;
+        domain.indexOf((global.projectsInfo[id.toString()] || {}).domain) !== -1;
 };
 
 connect()
