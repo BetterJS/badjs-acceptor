@@ -6,7 +6,7 @@ var connect = require('connect'),
 var cluster = require('cluster');
 var argv = process.argv.slice(2);
 
-var REG_REFERER = /^https?:\/\/[^\/]+\/?/i;
+var REG_REFERER = /^https?:\/\/[^\/]+\//i;
 
 if (argv.indexOf('--debug') >= 0) {
     logger.setLevel('DEBUG');
