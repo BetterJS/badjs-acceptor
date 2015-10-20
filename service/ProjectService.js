@@ -8,6 +8,10 @@ var connect = require('connect'),
     log4js = require('log4js'),
     logger = log4js.getLogger();
 
+var path = require("path");
+
+var dbPath = path.join(__dirname  , ".." , "project.db");
+
 
 var ProjectService = function(clusters) {
 
@@ -26,20 +30,15 @@ var ProjectService = function(clusters) {
                 param = req.body;
             }
 
-            if (param.auth != "badjsAccepter" || !param.projectsId) {
+            if (param.auth != "badjsAccepter" || !param.projectsInfo) {
 
             } else {
                 dispatchCluster({
-                    projectsId: param.projectsId,
                     projectsInfo: param.projectsInfo
                 });
 
-                fs.writeFile("./project.db", param.projectsId, function() {
-                    logger.info('update project.db :' + param.projectsId);
-                });
-
-                fs.writeFile("./project.info", param.projectsInfo || "", function() {
-                    logger.info('update project.info :' + param.projectsInfo);
+                fs.writeFile(dbPath, param.projectsInfo || "", function() {
+                    logger.info('update project.db :' + param.projectsInfo);
                 });
             }
 
@@ -49,17 +48,14 @@ var ProjectService = function(clusters) {
         })
         .listen(9001);
 
-    var data = fs.readFileSync("./project.db", "utf-8");
-    var info = fs.readFileSync("./project.info", "utf-8");
+    var info = fs.readFileSync(dbPath, "utf-8");
 
 
     dispatchCluster({
-        projectsId: data,
         projectsInfo: info
     });
 
-    logger.info('load project.db :' + data);
-    logger.info('load project.info :' + info);
+    logger.info('load project.db :' + info);
 };
 
 

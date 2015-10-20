@@ -3,6 +3,8 @@ var connect = require('connect'),
     log4js = require('log4js'),
     logger = log4js.getLogger();
 
+var path = require("path");
+
 var cluster = require('cluster');
 var argv = process.argv.slice(2);
 
@@ -17,9 +19,9 @@ if (argv.indexOf('--debug') >= 0) {
 }
 
 if (argv.indexOf('--project') >= 0) {
-    GLOBAL.pjconfig = require('./project.debug.json');
+    GLOBAL.pjconfig = require(path.join(__dirname , 'project.debug.json'));
 } else {
-    GLOBAL.pjconfig = require('./project.json');
+    GLOBAL.pjconfig = require(path.join(__dirname , 'project.json'));
 }
 
 if (cluster.isMaster) {
@@ -49,7 +51,6 @@ interceptor.add(require(GLOBAL.pjconfig.dispatcher.module)());
 
 var forbiddenData = '403 forbidden';
 
-global.projectsId = '';
 global.projectsInfo = {};
 
 var get_domain = function(url){
@@ -58,34 +59,22 @@ var get_domain = function(url){
 
 process.on('message', function(data) {
     var json = data;
-    if (json.projectsId) {
-        var map = {};
-        var pids = [];
-        json.projectsId.split("_").forEach(function(value) {
-            var pid_appkey = value.split("|");
-            var pid = pid_appkey[0] + "";
-            var appkey = pid_appkey[1] + "";
-            if (pid && appkey) {
-                pids.push(pid);
-                map[pid] = appkey;
-            }
-        });
-        global.projectsId = map;
-    }
-    if (json.projectsInfo) {
-        try {
-            var info = JSON.parse(json.projectsInfo);
-            if (typeof info === "object") {
-                for (var k in info) {
-                    var v = info[k] || {};
-                    v.domain = get_domain(v.url);
-                }
-                global.projectsInfo = info;
-            }
-        } catch (error) {}
+    var info = JSON.parse(json.projectsInfo);
+    if (typeof info === "object") {
+        for (var k in info) {
+            var v = info[k] || {};
+            v.domain = get_domain(v.url);
+        }
+        global.projectsInfo = info;
     }
 });
 
+/**
+ * 校验来源的url 是否和填写的url相同
+ * @param id
+ * @param req
+ * @returns {boolean}
+ */
 var referer_match = function(id, req) {
     var referer = (((req || {}).headers || {}).referer || "").toString();
     // no referer
@@ -111,7 +100,7 @@ connect()
         if (isNaN(id) ||
             id <= 0 ||
             id >= 9999 ||
-            !global.projectsId[id + ""] ||
+            !global.projectsInfo[id + ""] ||
             !referer_match(id, req)) {
 
             responseHeader['Content-length'] = forbiddenData.length;
