@@ -8,15 +8,20 @@ module.exports = function(nextStream) {
 
     function getClientIp(req) {
         try {
-            var xff = (req.headers['X-Forwarded-For'] || req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+            var xff = (
+                req.headers['X-Forwarded-For'] ||
+                req.headers['x-forwarded-for'] ||
+                ''
+            ).split(',')[0].trim();
 
-            return  xff ||
+            return xff ||
                 req.connection.remoteAddress ||
                 req.socket.remoteAddress ||
                 req.connection.socket.remoteAddress;
         } catch (ex) {
 
         }
+        
         return "0.0.0.0";
     }
 
