@@ -28,9 +28,9 @@ module.exports = function (nextStream) {
                     value.level = parse2Int(value.level)
                 }
 
-                if(value.uin){
+                /*if(value.uin){
                     value.uin = parse2Int(value.uin)
-                }
+                }*/
 
                 if(value.colNum){
                     value.colNum = parse2Int(value.colNum)
