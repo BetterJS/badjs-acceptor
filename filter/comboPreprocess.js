@@ -1,12 +1,10 @@
-
 var _ = require("underscore");
 
-var has = function (obj , key){
-    return obj != null && hasOwnProperty.call(obj, key);
-}
+var has = function(obj, key) {
+    return obj !== null && hasOwnProperty.call(obj, key);
+};
 
 var extend = function(obj) {
-
     var source, prop;
     for (var i = 1, length = arguments.length; i < length; i++) {
         source = arguments[i];
@@ -24,40 +22,41 @@ var extend = function(obj) {
  * 合并预处理
  * @returns {Stream}
  */
-module.exports = function () {
-  return {
-      process : function (data){
-          var queryData = data.data;
-          data.data = [];
+module.exports = function() {
+    return {
+        process: function(data) {
+            var queryData = data.data;
+            var newData = data.data = [];
 
-          if(!queryData.count){
-              data.data.push( queryData)
-          }else {
-              var fixedParam = {id : queryData.id , from: queryData.from , uin : queryData.uin , ext : queryData.ext || "{}"};
-              var queryArray = [];
-              if(_.isArray( fixedParam.ext)){
-                  delete fixedParam.ext;
-              }
-              delete queryData.id;
-              delete queryData.from;
-              delete queryData.uin;
-              delete queryData.count;
-              for(var key in queryData){
-                  if (!_.isArray(queryData[key])) {
-                      continue;
-                  }
-                  queryData[key].forEach(function (value , index ){
-                      if(!queryArray[index]){
-                          queryArray[index] = {};
-                      }
-                      queryArray[index][key] = value;
-                  })
-              }
+            if (!queryData.count) { // without combo
+                newData.push(queryData);
+            } else { // with combo
 
-              queryArray.forEach(function (value , index){
-                  data.data.push(extend(value , fixedParam));
-              })
-          }
-      }
-  }
+                // default param
+                var fixedParam = {
+                    id: queryData.id,
+                    uin: queryData.uin,
+                    from: queryData.from
+                };
+
+                delete queryData.id;
+                delete queryData.uin;
+                delete queryData.from;
+                delete queryData.count;
+
+                var queryArray = [];
+                for (var key in queryData) {
+                    _.isArray(queryData[key]) && queryData[key].forEach(function(value, index) {
+                        queryArray[index] = queryArray[index] || {};
+                        queryArray[index][key] = value;
+                    });
+                }
+
+                // extend default params
+                queryArray.forEach(function(value, index) {
+                    newData.push(extend(value, fixedParam));
+                });
+            }
+        }
+    };
 };
