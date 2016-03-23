@@ -78,7 +78,7 @@ process.on('message', function(data) {
 var referer_match = function(id, req) {
     var referer = (((req || {}).headers || {}).referer || "").toString();
     // no referer
-    if (!referer) return true;
+    if (!referer) return false;
     var domain = (referer.match(REG_REFERER) || [""])[0] || "";
     return typeof global.projectsInfo === "object" &&
         domain.indexOf((global.projectsInfo[id.toString()] || {}).domain) !== -1;
