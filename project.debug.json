@@ -7,8 +7,9 @@
         "module": "./dispatcher/zmq"
     },
     "interceptors": [
+        "./filter/validateParam",
         "./filter/comboPreprocess",
-        "./filter/addExtStream",
+        "./filter/addExt",
         "./filter/excludeParam",
         "./filter/str2Int"
     ]

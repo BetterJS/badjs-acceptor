@@ -3,7 +3,7 @@
  * 将某些字符串转非 整数
  * @returns {Stream}
  */
-module.exports = function (nextStream) {
+module.exports = function () {
     return {
         process : function (data){
 
