@@ -3,11 +3,13 @@
  * @returns {{process: Function}}
  */
 
+var _ = require("underscore");
+
 module.exports = function () {
     return {
         process : function (data){
 
-            if(!data.data.msg){
+            if(!_.isString(data.data.msg) ){
                 return false;
             }
 
