@@ -9,7 +9,7 @@ module.exports = function () {
     return {
         process : function (data){
 
-            if(!_.isString(data.data.msg) ){
+            if(!data.data.msg){
                 return false;
             }
 
