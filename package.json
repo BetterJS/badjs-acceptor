@@ -8,7 +8,7 @@
     "connect": "^2.25.7",
     "log4js": "^0.6.2",
     "underscore": "^1.8.3",
-    "zmq": "^2.8.0"
+    "axon": "^2.0.0"
   },
   "scripts": {
     "test": ""
