@@ -35,13 +35,14 @@ module.exports = function() {
                 // default param
                 var fixedParam = {
                     id: queryData.id,
-                    uin: queryData.uin,
-                    from: queryData.from
+                    uin: queryData.uin
+                    // https://github.com/BetterJS/badjs-report/issues/19
+                    // from: queryData.from
                 };
 
                 delete queryData.id;
                 delete queryData.uin;
-                delete queryData.from;
+                // delete queryData.from;
                 delete queryData.count;
 
                 var queryArray = [];
