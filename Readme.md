@@ -22,6 +22,7 @@
             [
             "./filter/comboPreprocess"  ,
             "./filter/addExtStream" ,
+            "./filter/blacklist",
             "./filter/excludeParam"  ,
             "./filter/str2Int"  
             ],
