@@ -12,5 +12,8 @@
         "./filter/addExt",
         "./filter/excludeParam",
         "./filter/str2Int"
+    ],
+    "blacklist":[
+        "127\\.0\\.0\\..+"
     ]
 }

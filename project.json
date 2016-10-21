@@ -10,7 +10,11 @@
         "./filter/validateParam",
         "./filter/comboPreprocess",
         "./filter/addExt",
+        "./filter/blacklist",
         "./filter/excludeParam",
         "./filter/str2Int"
+    ],
+    "blacklist":[
+        "127\\.0\\.0\\..+"
     ]
 }
