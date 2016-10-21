@@ -22,9 +22,15 @@
             [
             "./filter/comboPreprocess"  ,
             "./filter/addExtStream" ,
+            "./filter/blacklist",
             "./filter/excludeParam"  ,
             "./filter/str2Int"  
-            ]
+            ],
+    // IP 黑名单，使用正则表达式匹配要被拦截的IP地址
+    // 被以下任何一个正则表达式匹配的IP将会被拦截忽略        
+    "blacklist":[
+        "127\\.0\\.0\\..+"
+    ]
 }
 ```
 
