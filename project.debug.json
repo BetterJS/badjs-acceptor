@@ -10,7 +10,12 @@
         "./filter/validateParam",
         "./filter/comboPreprocess",
         "./filter/addExt",
+        "./filter/blackListValidate",
         "./filter/excludeParam",
         "./filter/str2Int"
-    ]
+    ],
+    "blackList" :{
+        "ip" : [],
+        "ua": ["Baiduspider" , "Tencent_Security_Team" ]
+    }
 }
