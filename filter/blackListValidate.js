@@ -1,3 +1,4 @@
+
 // 黑名单配置
 var blacklistIP = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ip : [] ;
 var blacklistUA = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ua  : [];
@@ -41,10 +42,10 @@ module.exports = function () {
                 var ip = arr[i].ip;
                 var ua = arr[i].userAgent;
                 if (inBlacklist(ip , blacklistIPRegExpList)) {
-                    throw new Error(ip + ' in blacklist  , forbidden。');
+                    return false;
                 }
                 if (inBlacklist(ua , blacklistUARegExpList)) {
-                    throw new Error(ua + ' in blacklist  , forbidden。');
+                     return false;
                 }
             }
         }
