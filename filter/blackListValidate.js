@@ -1,4 +1,9 @@
 
+
+var log4js = require('log4js'),
+    logger = log4js.getLogger();
+
+
 // 黑名单配置
 var blacklistIP = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ip : [] ;
 var blacklistUA = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ua  : [];
@@ -42,9 +47,11 @@ module.exports = function () {
                 var ip = arr[i].ip;
                 var ua = arr[i].userAgent;
                 if (inBlacklist(ip , blacklistIPRegExpList)) {
+                    logger.debug('ignore request ,  in Blacklist by Ip:' + arr[i].id);
                     return false;
                 }
                 if (inBlacklist(ua , blacklistUARegExpList)) {
+                    logger.debug('ignore request ,forbidden in Blacklist by userAgent :' + arr[i].id);
                      return false;
                 }
             }

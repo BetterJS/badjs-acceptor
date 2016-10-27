@@ -3,6 +3,11 @@
  * @returns {{process: Function}}
  */
 
+
+
+var log4js = require('log4js'),
+    logger = log4js.getLogger();
+
 var _ = require("underscore");
 
 module.exports = function () {
@@ -10,6 +15,7 @@ module.exports = function () {
         process : function (data){
 
             if(!data.data.msg){
+                logger.debug('ignore request  not msg  :' + data.data.id);
                 return false;
             }
 
