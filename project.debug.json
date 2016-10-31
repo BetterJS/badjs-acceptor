@@ -13,9 +13,5 @@
         "./filter/blackListValidate",
         "./filter/excludeParam",
         "./filter/str2Int"
-    ],
-    "blackList" :{
-        "ip" : [ "127\\.0\\.0\\.5"],
-        "ua": ["Baiduspider" , "Tencent_Security_Team" ]
-    }
+    ]
 }

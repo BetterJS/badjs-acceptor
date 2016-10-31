@@ -1,34 +1,42 @@
+var log4js = require('log4js');
 
+var projectsBlacklistTable = {};
 
-var log4js = require('log4js'),
-    logger = log4js.getLogger();
-
-
-// 黑名单配置
-var blacklistIP = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ip : [] ;
-var blacklistUA = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ua  : [];
-
-// ip黑名单正则
-var blacklistIPRegExpList = [];
-(blacklistIP || []).forEach(function (reg) {
-    blacklistIPRegExpList.push(new RegExp(reg));
-});
-
-// ua黑名单正则
-var blacklistUARegExpList = [];
-(blacklistUA || []).forEach(function (reg) {
-    blacklistUARegExpList.push(new RegExp(reg , "i"));
+process.on('message', function (data) {
+    var projectsInfo = JSON.parse(data.projectsInfo);
+    if (typeof projectsInfo === "object") {
+        // 为所有project初始化blacklistIPRegExpList ｜ blacklistUARegExpList
+        for (var id in projectsInfo) {
+            if (projectsInfo.hasOwnProperty(id)) {
+                var project = projectsInfo[id];
+                var one = {
+                    blacklistIPRegExpList: [],
+                    blacklistUARegExpList: []
+                };
+                var blacklist = JSON.parse(project['blacklist']);
+                if (typeof blacklist === 'object') {
+                    var blacklistIP = blacklist.ip;
+                    (blacklistIP || []).forEach(function (reg) {
+                        one.blacklistIPRegExpList.push(new RegExp(reg));
+                    });
+                    var blacklistUA = blacklist.ua;
+                    (blacklistUA || []).forEach(function (reg) {
+                        one.blacklistUARegExpList.push(new RegExp(reg, "i"));
+                    });
+                }
+                projectsBlacklistTable[id] = one;
+            }
+        }
+    }
 });
 
 /**
  * 判断是否在黑名单里
  * 黑名单列表支持正则表达式
- * @param ip 请求的ip
- * @return {boolean} 是否在黑名单里
  */
-function inBlacklist(ip , regExpList) {
+function inBlacklist(string, regExpList) {
     for (var i = 0; i < regExpList.length; i++) {
-        if (regExpList[i].test(ip)) {
+        if (regExpList[i].test(string)) {
             return true;
         }
     }
@@ -36,7 +44,6 @@ function inBlacklist(ip , regExpList) {
 }
 
 /**
- * Created by halwu
  * IP黑名单过滤
  */
 module.exports = function () {
@@ -44,15 +51,15 @@ module.exports = function () {
         process: function (data) {
             var arr = data.data;
             for (var i = 0; i < arr.length; i++) {
+                var id = arr[i].id;
+                var projectInfo = projectsBlacklistTable[id];
                 var ip = arr[i].ip;
                 var ua = arr[i].userAgent;
-                if (inBlacklist(ip , blacklistIPRegExpList)) {
-                    logger.debug('ignore request ,  in Blacklist by Ip:' + arr[i].id);
-                    return false;
+                if (inBlacklist(ip, projectInfo.blacklistIPRegExpList)) {
+                    throw new Error('ignore request ,in Blacklist by Ip:' + id);
                 }
-                if (inBlacklist(ua , blacklistUARegExpList)) {
-                    logger.debug('ignore request ,forbidden in Blacklist by userAgent :' + arr[i].id);
-                     return false;
+                if (inBlacklist(ua, projectInfo.blacklistUARegExpList)) {
+                    throw new Error('ignore request ,forbidden in Blacklist by userAgent:' + id);
                 }
             }
         }
