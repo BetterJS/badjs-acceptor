@@ -40,6 +40,8 @@ if (cluster.isMaster) {
     return;
 }
 
+global.projectsInfo = {};
+
 var interceptor = require('c-interceptor')();
 var interceptors = GLOBAL.pjconfig.interceptors;
 
@@ -50,8 +52,6 @@ interceptors.forEach(function(value, key) {
 interceptor.add(require(GLOBAL.pjconfig.dispatcher.module)());
 
 var forbiddenData = '403 forbidden';
-
-global.projectsInfo = {};
 
 var get_domain = function(url){
     return (url.toString().match(REG_DOMAIN) || ['', ''])[1].replace(/^\*\./, '');
