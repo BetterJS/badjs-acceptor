@@ -57,6 +57,23 @@ var get_domain = function(url){
     return (url.toString().match(REG_DOMAIN) || ['', ''])[1].replace(/^\*\./, '');
 };
 
+var genBlacklistReg = function(data){
+    // ip黑名单正则
+    var blacklistIPRegExpList = [];
+    (data.blacklist &&  data.blacklist.ip ? data.blacklist.ip : []).forEach(function (reg) {
+        blacklistIPRegExpList.push(new RegExp("^" + reg.replace(/\./g , "\\.")) );
+    });
+    data.blacklistIPRegExpList = blacklistIPRegExpList
+
+// ua黑名单正则
+    var blacklistUARegExpList = [];
+    ( data.blacklist &&   data.blacklist.ua ?  data.blacklist.ua : []).forEach(function (reg) {
+        blacklistUARegExpList.push(new RegExp(reg , "i"));
+    });
+    data.blacklistUARegExpList = blacklistUARegExpList
+
+};
+
 process.on('message', function(data) {
     var json = data;
     var info = JSON.parse(json.projectsInfo);
@@ -64,6 +81,7 @@ process.on('message', function(data) {
         for (var k in info) {
             var v = info[k] || {};
             v.domain = get_domain(v.url);
+            genBlacklistReg(v  );
         }
         global.projectsInfo = info;
     }
@@ -87,6 +105,13 @@ var referer_match = function(id, req) {
         domain.indexOf((global.projectsInfo[id.toString()] || {}).domain) !== -1;
 };
 
+var reponseReject = function (req , res , responseHeader){
+    responseHeader['Content-length'] = forbiddenData.length;
+    res.writeHead(403, responseHeader);
+    res.write(forbiddenData);
+    res.end();
+}
+
 connect()
     .use('/badjs', connect.query())
     .use('/badjs', function(req, res) {
@@ -106,11 +131,9 @@ connect()
             !global.projectsInfo[id + ""] ||
             !referer_match(id, req)) {
 
-            responseHeader['Content-length'] = forbiddenData.length;
-            res.writeHead(403, responseHeader);
-            res.write(forbiddenData);
+            reponseReject(req , res , responseHeader);
             logger.debug('forbidden :' + req.query.id);
-            res.end();
+
             return;
         }
 
@@ -122,11 +145,14 @@ connect()
                 data: req.query
             });
         } catch (err) {
-            responseHeader['Content-length'] = forbiddenData.length;
-            res.writeHead(403, responseHeader);
-            res.write(forbiddenData);
-            logger.info('parse param  error :' + err);
-            res.end();
+            reponseReject(req , res , responseHeader);
+            logger.debug('id ' +  req.query.id +' , interceptor error :' + err );
+            return;
+        }
+
+        if(req.throwError){
+            reponseReject(req , res , responseHeader);
+            logger.debug('id ' +  req.query.id +' , interceptor reject :' + req.throwError);
             return;
         }
 

@@ -11,7 +11,7 @@ var blacklistUA = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ua
 // ip黑名单正则
 var blacklistIPRegExpList = [];
 (blacklistIP || []).forEach(function (reg) {
-    blacklistIPRegExpList.push(new RegExp(reg));
+    blacklistIPRegExpList.push( new RegExp("^" + reg.replace(/\./g , "\\.")) );
 });
 
 // ua黑名单正则
@@ -47,13 +47,30 @@ module.exports = function () {
                 var ip = arr[i].ip;
                 var ua = arr[i].userAgent;
                 if (inBlacklist(ip , blacklistIPRegExpList)) {
-                    logger.debug('ignore request ,  in Blacklist by Ip:' + arr[i].id);
+                    logger.debug('ignore request ,  in Blacklist by Ip:' + ip);
+                    data.req.throwError = "global_blackList_ip"
                     return false;
                 }
                 if (inBlacklist(ua , blacklistUARegExpList)) {
-                    logger.debug('ignore request ,forbidden in Blacklist by userAgent :' + arr[i].id);
+                    logger.debug('ignore request ,forbidden in Blacklist by userAgent :' + ua);
+                    data.req.throwError = "global_blackList_ua"
                      return false;
                 }
+
+                var pBlacklistIPRegExpList = global.projectsInfo[arr[i].id].blacklistIPRegExpList;
+                if(pBlacklistIPRegExpList && pBlacklistIPRegExpList.length && inBlacklist(ip , pBlacklistIPRegExpList)){
+                    logger.debug('ignore request ,  in pBlacklist by Ip:' + ip);
+                    data.req.throwError = "project_blackList_ip"
+                    return false;
+                }
+
+                var pBlacklistUARegExpList = global.projectsInfo[arr[i].id].blacklistUARegExpList;
+                if(pBlacklistUARegExpList && pBlacklistUARegExpList.length && inBlacklist(ua , pBlacklistUARegExpList)){
+                    logger.debug('ignore request ,  in pBlacklist by ua:' + ua);
+                    data.req.throwError = "project_blackList_ua"
+                    return false;
+                }
+
             }
         }
     };

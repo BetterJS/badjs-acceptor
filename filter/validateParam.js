@@ -16,6 +16,7 @@ module.exports = function () {
 
             if(!data.data.msg){
                 logger.debug('ignore request  not msg  :' + data.data.id);
+                data.req.throwError = "msg_is_null"
                 return false;
             }
 

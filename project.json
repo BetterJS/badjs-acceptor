@@ -15,7 +15,7 @@
         "./filter/str2Int"
     ],
     "blackList" :{
-        "ip" : [ "127\\.0\\.0\\.5"],
+        "ip" : [ "999.9.9.9" , "999.9.*" ,  "999.9.*.*"],
         "ua": ["Baiduspider" , "Tencent_Security_Team" ]
     }
 }
