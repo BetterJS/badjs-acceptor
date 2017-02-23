@@ -28,4 +28,8 @@
 }
 ```
 
+# 上报接口
+- `/badjs` 只接收 HTTP GET 方法请求的上报，report模块使用改模块上报。
+- `/post_badjs` 只接收 HTTP POST 方法请求的上报，应对上报数据大的情况。
+
 
