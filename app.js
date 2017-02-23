@@ -112,56 +112,71 @@ var reponseReject = function (req , res , responseHeader){
     res.end();
 }
 
+/**
+ * 接收上报 处理 回应
+ * @param req connect request
+ * @param res connect response
+ * @param params 上报参数
+ */
+var handleReport = function (req, res, params) {
+    logger.debug('===== get a message =====');
+
+    var responseHeader = {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'image/jpeg',
+        'Connection': 'close'
+    };
+
+    var id = params.id - 0;
+    if (isNaN(id) ||
+        id <= 0 ||
+        id >= 9999 ||
+        !global.projectsInfo[id + ""] ||
+        !referer_match(id, req)) {
+
+        reponseReject(req , res , responseHeader);
+        logger.debug('forbidden :' + params.id);
+
+        return;
+    }
+
+    params.id = id;
+
+    try {
+        interceptor.invoke({
+            req: req,
+            data: params
+        });
+    } catch (err) {
+        reponseReject(req , res , responseHeader);
+        logger.debug('id ' +  params.id +' , interceptor error :' + err );
+        return;
+    }
+
+    if(req.throwError){
+        reponseReject(req , res , responseHeader);
+        logger.debug('id ' +  params.id +' , interceptor reject :' + req.throwError);
+        return;
+    }
+
+    // responseHeader end with 204
+    responseHeader['Content-length'] = 0;
+    res.writeHead(204, responseHeader);
+
+    logger.debug('===== complete a message =====');
+    res.end();
+}
+
 connect()
+    // accept GET report only
     .use('/badjs', connect.query())
     .use('/badjs', function(req, res) {
-
-        logger.debug('===== get a message =====');
-
-        var responseHeader = {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'image/jpeg',
-            'Connection': 'close'
-        };
-
-        var id = req.query.id - 0;
-        if (isNaN(id) ||
-            id <= 0 ||
-            id >= 9999 ||
-            !global.projectsInfo[id + ""] ||
-            !referer_match(id, req)) {
-
-            reponseReject(req , res , responseHeader);
-            logger.debug('forbidden :' + req.query.id);
-
-            return;
-        }
-
-        req.query.id = id;
-
-        try {
-            interceptor.invoke({
-                req: req,
-                data: req.query
-            });
-        } catch (err) {
-            reponseReject(req , res , responseHeader);
-            logger.debug('id ' +  req.query.id +' , interceptor error :' + err );
-            return;
-        }
-
-        if(req.throwError){
-            reponseReject(req , res , responseHeader);
-            logger.debug('id ' +  req.query.id +' , interceptor reject :' + req.throwError);
-            return;
-        }
-
-        // responseHeader end with 204
-        responseHeader['Content-length'] = 0;
-        res.writeHead(204, responseHeader);
-
-        logger.debug('===== complete a message =====');
-        res.end();
+        handleReport(req,res,req.query);
+    })
+    // accept POST report only
+    .use('/post_badjs', connect.bodyParser())
+    .use('/post_badjs',function (req, res) {
+        handleReport(req,res,req.body);
     })
     .listen(GLOBAL.pjconfig.port);
 
