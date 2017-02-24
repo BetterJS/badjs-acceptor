@@ -19,9 +19,9 @@ if (argv.indexOf('--debug') >= 0) {
 }
 
 if (argv.indexOf('--project') >= 0) {
-    GLOBAL.pjconfig = require(path.join(__dirname , 'project.debug.json'));
+    global.pjconfig = require(path.join(__dirname , 'project.debug.json'));
 } else {
-    GLOBAL.pjconfig = require(path.join(__dirname , 'project.json'));
+    global.pjconfig = require(path.join(__dirname , 'project.json'));
 }
 
 if (cluster.isMaster) {
@@ -41,13 +41,13 @@ if (cluster.isMaster) {
 }
 
 var interceptor = require('c-interceptor')();
-var interceptors = GLOBAL.pjconfig.interceptors;
+var interceptors = global.pjconfig.interceptors;
 
 interceptors.forEach(function(value, key) {
     var one = require(value)();
     interceptor.add(one);
 });
-interceptor.add(require(GLOBAL.pjconfig.dispatcher.module)());
+interceptor.add(require(global.pjconfig.dispatcher.module)());
 
 var forbiddenData = '403 forbidden';
 
@@ -114,6 +114,7 @@ var reponseReject = function (req , res , responseHeader){
 
 connect()
     .use('/badjs', connect.query())
+    .use('/badjs', connect.bodyParser())
     .use('/badjs', function(req, res) {
 
         logger.debug('===== get a message =====');
@@ -124,7 +125,12 @@ connect()
             'Connection': 'close'
         };
 
-        var id = req.query.id - 0;
+        var param = req.query;
+        if (req.method === "POST") {
+            param = req.body;
+        }
+
+        var id = param.id - 0;
         if (isNaN(id) ||
             id <= 0 ||
             id >= 9999 ||
@@ -132,27 +138,27 @@ connect()
             !referer_match(id, req)) {
 
             reponseReject(req , res , responseHeader);
-            logger.debug('forbidden :' + req.query.id);
+            logger.debug('forbidden :' + param.id);
 
             return;
         }
 
-        req.query.id = id;
+        param.id = id;
 
         try {
             interceptor.invoke({
                 req: req,
-                data: req.query
+                data: param
             });
         } catch (err) {
             reponseReject(req , res , responseHeader);
-            logger.debug('id ' +  req.query.id +' , interceptor error :' + err );
+            logger.debug('id ' +  param.id +' , interceptor error :' + err );
             return;
         }
 
         if(req.throwError){
             reponseReject(req , res , responseHeader);
-            logger.debug('id ' +  req.query.id +' , interceptor reject :' + req.throwError);
+            logger.debug('id ' +  param.id +' , interceptor reject :' + req.throwError);
             return;
         }
 
@@ -163,6 +169,6 @@ connect()
         logger.debug('===== complete a message =====');
         res.end();
     })
-    .listen(GLOBAL.pjconfig.port);
+    .listen(global.pjconfig.port);
 
-logger.info('start badjs-accepter , listen ' + GLOBAL.pjconfig.port + ' ...');
+logger.info('start badjs-accepter , listen ' + global.pjconfig.port + ' ...');
