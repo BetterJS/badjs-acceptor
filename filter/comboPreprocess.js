@@ -36,8 +36,11 @@ module.exports = function() {
                 var fixedParam = {
                     id: queryData.id,
                     uin: queryData.uin,
-                    from: queryData.from
                 };
+
+                if(_.isString(queryData.from)){
+                    fixedParam.from = queryData.from
+                }
 
                 //delete queryData.id;
                 //delete queryData.uin;
