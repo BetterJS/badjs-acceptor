@@ -95,14 +95,20 @@ process.on('message', function(data) {
  */
 var referer_match = function(id, req) {
     var referer = (((req || {}).headers || {}).referer || "").toString();
+
+    var projectMatchDomain =  (global.projectsInfo[id.toString()] || {}).domain ;
     // no referer
     if (!referer) {
+        // match match is * , no detect referer
+        if(!projectMatchDomain){
+            return true;
+        }
         logger.debug('no referer ,  forbidden :' + req.query.id);
         return false;
     }
     var domain = (referer.match(REG_REFERER) || [""])[0] || "";
     return typeof global.projectsInfo === "object" &&
-        domain.indexOf((global.projectsInfo[id.toString()] || {}).domain) !== -1;
+        domain.indexOf(projectMatchDomain) !== -1;
 };
 
 var reponseReject = function (req , res , responseHeader){

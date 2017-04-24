@@ -12,7 +12,8 @@
         "./filter/addExt",
         "./filter/blackListValidate",
         "./filter/excludeParam",
-        "./filter/str2Int"
+        "./filter/str2Int",
+        "./filter/limitTotal"
     ],
     "blackList" :{
         "ip" : [ "999.9.9.9" , "999.9.*" ,  "999.9.*.*"],
