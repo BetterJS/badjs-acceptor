@@ -1,6 +1,7 @@
 /* global process, global, GLOBAL */
 var connect = require('connect'),
     log4js = require('log4js'),
+    fs = require("fs"),
     logger = log4js.getLogger();
 
 var path = require("path");
@@ -52,6 +53,7 @@ interceptor.add(require(global.pjconfig.dispatcher.module)());
 var forbiddenData = '403 forbidden';
 
 global.projectsInfo = {};
+global.offlineAutoInfo = {};
 
 var get_domain = function(url){
     return (url.toString().match(REG_DOMAIN) || ['', ''])[1].replace(/^\*\./, '');
@@ -75,17 +77,27 @@ var genBlacklistReg = function(data){
 };
 
 process.on('message', function(data) {
-    var json = data;
-    var info = JSON.parse(json.projectsInfo);
-    if (typeof info === "object") {
-        for (var k in info) {
-            var v = info[k] || {};
-            v.domain = get_domain(v.url);
-            genBlacklistReg(v  );
+    var json = data ,  info ;
+    if(json.projectsInfo){
+        info = JSON.parse(json.projectsInfo);
+        if (typeof info === "object") {
+            for (var k in info) {
+                var v = info[k] || {};
+                v.domain = get_domain(v.url);
+                genBlacklistReg(v  );
+            }
+            global.projectsInfo = info;
         }
-        global.projectsInfo = info;
+    }else if(json.offlineAutoInfo){
+         json = data;
+        info = JSON.parse(json.offlineAutoInfo);
+        if (typeof info === "object") {
+            global.offlineAutoInfo = info;
+        }
+
     }
 });
+
 
 /**
  * 校验来源的url 是否和填写的url相同
@@ -174,6 +186,40 @@ connect()
 
         logger.debug('===== complete a message =====');
         res.end();
+    })
+    .use('/offlineLog', connect.bodyParser())
+    .use('/offlineLog', function(req, res) {
+        logger.debug('===== get offline log =====');
+        var param = req.body;
+        if(param.offline_log){
+            try{
+                var offline_log = JSON.parse(param.offline_log);
+                var filePath = path.join(__dirname  , 'offline_log' , offline_log.id +"");
+                var fileName = offline_log.uin + "_"+offline_log.startDate + "_" + offline_log.endDate;
+                if(!fs.existsSync(filePath)){
+                    fs.mkdirSync(filePath)
+                }
+                fs.writeFile( path.join(filePath , fileName ) , param.offline_log)
+
+                logger.info('get offline log : ' + path.join(filePath , fileName ));
+            }catch(e){
+                logger.warn(e);
+            }
+        }
+
+        res.end()
+
+    })
+    .use('/offlineAuto', connect.query())
+    .use('/offlineAuto', function(req, res) {
+        logger.debug('===== getofflineAuto =====');
+        var param = req.query, result =false;
+        if(param.id && param.uin && global.offlineAutoInfo[param.id + "_" + param.uin]){
+            logger.info('reponse auto offline auto  : ' + (param.id + "_" + param.uin));
+            result = true;
+        }
+        res.write("window && window._badjsOfflineAuto && window._badjsOfflineAuto("+result+");")
+        res.end()
     })
     .listen(global.pjconfig.port);
 
