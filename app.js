@@ -1,9 +1,10 @@
 /* global process, global, GLOBAL */
 var connect = require('connect'),
     log4js = require('log4js'),
-    fs = require("fs"),
     logger = log4js.getLogger();
 
+var url = require("url")
+var http = require("http");
 var path = require("path");
 
 var cluster = require('cluster');
@@ -24,6 +25,17 @@ if (argv.indexOf('--project') >= 0) {
 } else {
     global.pjconfig = require(path.join(__dirname , 'project.json'));
 }
+
+if(global.pjconfig.offline){
+    if(global.pjconfig.offline.offlineLogReport){
+        global.pjconfig.offline.olrUrl = url.parse(global.pjconfig.offline.offlineLogReport)
+    }
+
+    if(global.pjconfig.offline.offlineLogCheck){
+        global.pjconfig.offline.olcUrl  = url.parse(global.pjconfig.offline.offlineLogCheck)
+    }
+}
+
 
 if (cluster.isMaster) {
 
@@ -88,13 +100,6 @@ process.on('message', function(data) {
             }
             global.projectsInfo = info;
         }
-    }else if(json.offlineAutoInfo){
-         json = data;
-        info = JSON.parse(json.offlineAutoInfo);
-        if (typeof info === "object") {
-            global.offlineAutoInfo = info;
-        }
-
     }
 });
 
@@ -187,39 +192,63 @@ connect()
         logger.debug('===== complete a message =====');
         res.end();
     })
-    .use('/offlineLog', connect.bodyParser())
+    //.use('/offlineLog', connect.bodyParser())
     .use('/offlineLog', function(req, res) {
-        logger.debug('===== get offline log =====');
-        var param = req.body;
-        if(param.offline_log){
-            try{
-                var offline_log = JSON.parse(param.offline_log);
-                var filePath = path.join(__dirname  , 'offline_log' , offline_log.id +"");
-                var fileName = offline_log.uin + "_"+offline_log.startDate + "_" + offline_log.endDate;
-                if(!fs.existsSync(filePath)){
-                    fs.mkdirSync(filePath)
-                }
-                fs.writeFile( path.join(filePath , fileName ) , param.offline_log)
 
-                logger.info('get offline log : ' + path.join(filePath , fileName ));
-            }catch(e){
-                logger.warn(e);
-            }
+        // 大于 10ms , forbidden
+        if(parseInt(req.headers['content-length'], 10) > 10485760){
+            res.end();
+            return ;
         }
 
-        res.end()
+        var bufData = [];
+        req.on("data" , function (chunck){
+            bufData.push(chunck)
+        })
+        req.on("end" , function (){
+            res.end();
+            if(!global.pjconfig.offline.olrUrl){
+                return
+            }
+
+            var httpPost = http.request({
+                hostname: global.pjconfig.offline.olrUrl.hostname,
+                port: global.pjconfig.offline.olrUrl.port,
+                path: global.pjconfig.offline.olrUrl.path,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Length': Buffer.byteLength(bufData)
+                }
+            })
+
+            httpPost.write(Buffer.concat(bufData) , function (){
+                httpPost.end();
+            })
+
+        })
 
     })
     .use('/offlineAuto', connect.query())
     .use('/offlineAuto', function(req, res) {
-        logger.debug('===== getofflineAuto =====');
-        var param = req.query, result =false;
-        if(param.id && param.uin && global.offlineAutoInfo[param.id + "_" + param.uin]){
-            logger.info('reponse auto offline auto  : ' + (param.id + "_" + param.uin));
-            result = true;
-        }
-        res.write("window && window._badjsOfflineAuto && window._badjsOfflineAuto("+result+");")
-        res.end()
+        var param = req.query;
+
+        http.get( global.pjconfig.offline.offlineLogCheck + "?id="+param.id +"&uin="+ param.uin , function (clientRes){
+            var result ="";
+            clientRes.setEncoding('utf8');
+            clientRes.on("data" , function (chunk){
+                result += chunk
+            })
+
+            clientRes.on("end" , function (){
+                //res.write()
+                res.end("window && window._badjsOfflineAuto && window._badjsOfflineAuto("+(result ? result : false)+");")
+            })
+        }).on('error', function (e){
+            logger.warn("offlineLogCheck err , ", e)
+            res.end("window && window._badjsOfflineAuto && window._badjsOfflineAuto(false);")
+        });
+
     })
     .listen(global.pjconfig.port);
 

@@ -6,6 +6,10 @@
         "subscribe": "badjs",
         "module": "./dispatcher/axon"
     },
+    "offline": {
+        "offlineLogReport": "http://127.0.0.1:9010/offlineLogReport",
+        "offlineLogCheck": "http://127.0.0.1:9010/offlineLogCheck"
+    },
     "interceptors": [
         "./filter/validateParam",
         "./filter/comboPreprocess",
