@@ -222,9 +222,15 @@ connect()
                 }
             })
 
+            httpPost.on("error" , function (e){
+                logger.warn("offlineLogReport err , ", e)
+            })
+
             httpPost.write(Buffer.concat(bufData) , function (){
                 httpPost.end();
             })
+
+
 
         })
 
