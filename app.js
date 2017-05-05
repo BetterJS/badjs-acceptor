@@ -88,6 +88,25 @@ var genBlacklistReg = function(data){
 
 };
 
+function getClientIp(req) {
+    try {
+        var xff = (
+            req.headers['X-Forwarded-For'] ||
+            req.headers['x-forwarded-for'] ||
+            ''
+        ).split(',')[0].trim();
+
+        return xff ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
+    } catch (ex) {
+
+    }
+
+    return "0.0.0.0";
+}
+
 process.on('message', function(data) {
     var json = data ,  info ;
     if(json.projectsInfo){
@@ -218,7 +237,9 @@ connect()
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Content-Length': Buffer.byteLength(bufData)
+                    'Content-Length': Buffer.byteLength(bufData),
+                    'User-Agent': req.headers['user-agent'],
+                    'X-Forwarded-For' :  getClientIp(req)
                 }
             })
 
