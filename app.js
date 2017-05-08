@@ -215,7 +215,7 @@ connect()
     .use('/offlineLog', function(req, res) {
 
         // 大于 10ms , forbidden
-        if(parseInt(req.headers['content-length'], 10) > 10485760){
+        if(parseInt(req.headers['content-length']) > 10485760){
             res.end();
             return ;
         }
@@ -237,7 +237,7 @@ connect()
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Content-Length': Buffer.byteLength(bufData),
+                    'Content-Length': req.headers['content-length'],
                     'User-Agent': req.headers['user-agent'],
                     'X-Forwarded-For' :  getClientIp(req)
                 }
