@@ -38,6 +38,7 @@ module.exports = function () {
             if(!limitTotal[id]){
                 total = limitTotal[id] = arr.length;
             }else {
+                limitTotal[id] += arr.length;
                 total = limitTotal[id]+ arr.length;
             }
 
